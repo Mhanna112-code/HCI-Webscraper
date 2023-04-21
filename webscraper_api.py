@@ -6,14 +6,14 @@ from bs4 import BeautifulSoup
 import pandas as pd
 
 
-async def get_data(category):
+def get_data(category):
     try:
-        # TODO replace query with local html file location
-        query_url = f"https://sfbay.craigslist.org/search/sfc/sss?query={category}#search=1~gallery~0~0"
+        # Replace query with local html file location
+        file_path = f"{category}.html"
 
-        # Get html from query url
-        response = requests.get(query_url)
-        page_content = response.content
+        # Read and parse the local html file
+        with open(file_path, 'r', encoding='utf-8') as file:
+            page_content = file.read()
 
         # Initialize BeautifulSoup with html content
         soup = BeautifulSoup(page_content, 'html.parser')
@@ -25,7 +25,7 @@ async def get_data(category):
         # main class = “cl-search cl-hide-filters cl-search-view-mode-gallery section-sss category-sss cl-narrow cl-search-sort-mode-relevance" div-class =“cl-search-results” ->
         # div-class ="results cl-results-page cl-search-view-mode-gallery narrow” ->
         # ol -> li
-        script_tags = soup.find_all('main')
+        script_tags = soup.find_all('script')
         # TODO for loop through li tags to pull data we need
         for result in script_tags:
             location_match = re.search(r'location:\s*({.*?})\s*,', result.text)
@@ -38,6 +38,7 @@ async def get_data(category):
                 if city_match:
                     city = city_match.group(1)
                 location = city + ', ' + region
+                query_url = f"https://sfbay.craigslist.org/search/sfc/sss?query={category}#search=1~gallery~0~0"
                 search_results.append([query_url, location])
         time.sleep(1)
         columns = (['PostURL', 'Location'])
