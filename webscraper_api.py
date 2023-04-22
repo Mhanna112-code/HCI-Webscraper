@@ -1,14 +1,13 @@
 import re
 import time
 import datetime
-import requests
 from bs4 import BeautifulSoup
 import pandas as pd
 
 
 def get_data(category):
     try:
-        # Replace query with local html file location
+        # Local html file location
         file_path = f"{category}.html"
 
         # Read and parse the local html file
@@ -20,28 +19,14 @@ def get_data(category):
         # Array to hold data rows
         search_results = []
 
-        # TODO Change script tags to traverse embedded tags until you get to li tags containing posting info we need
-        # located at Body -> main ->div-class =“cl-content”  ->
-        # main class = “cl-search cl-hide-filters cl-search-view-mode-gallery section-sss category-sss cl-narrow cl-search-sort-mode-relevance" div-class =“cl-search-results” ->
-        # div-class ="results cl-results-page cl-search-view-mode-gallery narrow” ->
-        # ol -> li
-        script_tags = soup.find_all('script')
-        # TODO for loop through li tags to pull data we need
-        for result in script_tags:
-            location_match = re.search(r'location:\s*({.*?})\s*,', result.text)
-            if location_match:
-                location_dict = location_match.group(1)
-                region_match = re.search(r'"region":\s*"([^"]+)"', location_dict)
-                city_match = re.search(r'"city":\s*"([^"]+)"', location_dict)
-                if region_match:
-                    region = region_match.group(1)
-                if city_match:
-                    city = city_match.group(1)
-                location = city + ', ' + region
-                query_url = f"https://sfbay.craigslist.org/search/sfc/sss?query={category}#search=1~gallery~0~0"
-                search_results.append([query_url, location])
-        time.sleep(1)
-        columns = (['PostURL', 'Location'])
+        li_tags = soup.find_all('li', attrs={'class': 'cl-search-result cl-search-view-mode-gallery'})
+
+        # TODO-EMMANUEL: for loop through li tags to pull data we need
+        for li in li_tags:
+            # Get the Posting Name, Date, Price and Location of each posting
+            pass
+        # Columns for Excel Sheet
+        columns = (['PostID, PostTitle', 'PostDate', 'PostLocation'])
         # Store data in dataframe
         df = pd.DataFrame(search_results, columns=columns)
         timestamp = datetime.datetime.now().strftime('%m_%d_%y %H%M%S')
