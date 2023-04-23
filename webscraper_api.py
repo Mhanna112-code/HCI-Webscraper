@@ -1,3 +1,4 @@
+import os
 import re
 import time
 import datetime
@@ -74,11 +75,17 @@ def output_dummy_csv():
         columns = (['PostURL', 'Location'])
         # Store data in dataframe
         df = pd.DataFrame(search_results, columns=columns)
-        timestamp = datetime.datetime.now().strftime('%m_%d_%y %H%M%S')
-        # Output Dataframe to CSV
-        df.to_csv(f'Craigslist Results ({timestamp}).csv', index=False)
+        # Create a Results directory if it doesn't exist
+        if not os.path.exists('Results'):
+            os.makedirs('Results')
+
+        # Save the file to the Results directory
+        timestamp = datetime.datetime.now().strftime('%m_%d_%y_%H%M%S')
+        output_path = os.path.join('Results', f'Craigslist_Results_{category}_{timestamp}.csv')
+        df.to_csv(output_path, index=False)
         print('File Successfully Created!')
         return Response("File Successfully Created!", status=200)
+
 
     except Exception as e:
         print(e)
