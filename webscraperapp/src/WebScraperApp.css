@@ -18,6 +18,7 @@
     max-width: 400px;
     padding: 10px; /* Increase padding for input element */
     font-size: 1em; /* Reset font size for input element to keep it consistent */
+    text-align: left; /* Align the input element to the left */
 }
 
 .web-scraper-app select {
