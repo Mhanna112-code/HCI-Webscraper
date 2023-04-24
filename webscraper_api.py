@@ -4,9 +4,11 @@ import time
 import datetime
 from bs4 import BeautifulSoup
 import pandas as pd
-from flask import Flask, Response, request
+from flask import Flask, Response, request, jsonify
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 
 def get_data(category):
     try:
@@ -84,7 +86,8 @@ def output_dummy_csv():
         output_path = os.path.join('Results', f'Craigslist_Results_{category}_{timestamp}.csv')
         df.to_csv(output_path, index=False)
         print('File Successfully Created!')
-        return Response("File Successfully Created!", status=200)
+        print(jsonify(df.to_dict(orient='records')))
+        return jsonify(df.to_dict(orient='records'))
 
 
     except Exception as e:
@@ -93,5 +96,5 @@ def output_dummy_csv():
 
 
 if __name__ == "__main__":
-    #app.run(debug=True)
-    get_data("photography")
+    app.run(debug=True)
+    #get_data("photography")

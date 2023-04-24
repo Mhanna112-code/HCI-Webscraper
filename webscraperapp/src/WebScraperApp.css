@@ -1,0 +1,76 @@
+.web-scraper-app {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    border: 2px solid #333; /* Add a border to the container */
+    border-radius: 30px; /* Add rounded corners to the border */
+    background-color: #f5f5f5; /* Add a background color to the container */
+    font-size: 1.2em; /* Increase the font size for all elements within the container */
+    width: 60%; /* Set the width of the container to 60% of the page width */
+    max-width: 1000px; /* Set a max-width to avoid the container getting too wide */
+    margin: 60px auto 0; /* Center the container horizontally */
+}
+
+.web-scraper-app .common-input {
+    margin: 20px;
+    width: 100%;
+    max-width: 400px;
+    padding: 10px; /* Increase padding for input element */
+    font-size: 1em; /* Reset font size for input element to keep it consistent */
+}
+
+.web-scraper-app select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="black" d="M7 10l5 5 5-5z"/></svg>') no-repeat right 10px center, white;
+    background-size: 20px;
+}
+
+
+.web-scraper-app button.common-btn {
+    padding: 10px 20px; /* Increase padding for buttons */
+    max-width: 100px; /* Set a max-width to avoid the button getting too wide */
+    /*background-color: white;*/
+    border-radius: 6px; /* Add rounded corners to the border */
+}
+
+.submit-btn {
+    position: relative;
+    top: -2px; /* Adjust this value as needed to align the button */
+}
+
+.submit-btn:hover {
+    background-color: #333;
+    color: #fff;
+  }
+  
+
+.csv-columns-container {
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.csv-columns-container h4 {
+    margin-left: 6px;
+}
+
+.csv-columns-container label {
+    margin-right: 10px;
+}
+
+.button-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 30px;
+    width: 100%;
+    max-width: 300px;
+}
+
+.button-container button:hover {
+    background-color: #333;
+    color: #fff;
+  }
+  
