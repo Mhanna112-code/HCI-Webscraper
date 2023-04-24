@@ -6,6 +6,7 @@ const WebScraperApp = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedOption, setSelectedOption] = useState('');
     const [data, setData] = useState([]);
+    const [selectedColumns, setSelectedColumns] = useState([]);
 
     const handleSearchChange = (event) => {
         setSearchTerm(event.target.value);
@@ -24,9 +25,8 @@ const WebScraperApp = () => {
     };
 
     const exportToCSV = (data, filename) => {
-        const headers = ['PostURL', 'Location'];
         const csvContent = [
-            headers.join(','),
+            selectedColumns.join(','),
             ...data.map((item) => `${item.PostURL},${item.Location}`),
         ].join('\n');
 
@@ -48,16 +48,33 @@ const WebScraperApp = () => {
 
     const handleExport = () => {
         const filename = `Craigslist_Results_${Date.now()}.csv`;
-        exportToCSV(data, filename);
+        const columnsToExport = selectedColumns.length ? selectedColumns : ['PostURL', 'Location'];
+        const dataToExport = data.map(item => {
+            const filteredItem = {};
+            columnsToExport.forEach(column => {
+                filteredItem[column] = item[column];
+            });
+            return filteredItem;
+        });
+        exportToCSV(dataToExport, filename);
     };
 
     const handleReset = () => {
         setSearchTerm('');
         setSelectedOption('');
+        setSelectedColumns([]);
     };
 
+    const handleCheckboxChange = (event) => {
+        const selected = event.target.checked ? [...selectedColumns, event.target.value] : selectedColumns.filter(item => item !== event.target.value);
+        setSelectedColumns(selected);
+    }
+
     const handleExit = () => {
-        console.log('Exiting app...');
+        if (window.confirm('Are you sure you want to exit the app?')) {
+            console.log('Exiting app...');
+            window.close();
+        }
     };
 
     return (
@@ -77,7 +94,7 @@ const WebScraperApp = () => {
                     onChange={handleOptionChange}
                 >
                     <option value="">Choose a category</option>
-                    <option value="option1">Option 1</option>
+                    <option value="Cars">Cars</option>
                     <option value="option2">Option 2</option>
                     <option value="option3">Option 3</option>
                     <option value="option4">Option 4</option>
@@ -87,19 +104,19 @@ const WebScraperApp = () => {
             <div className="csv-columns-container">
                 <h4>Select columns to include in the exported CSV:</h4>
                 <label>
-                    <input type="checkbox" name="columns" value="PostName" />
+                    <input type="checkbox" name="columns" value="PostName" onChange={handleCheckboxChange} checked={selectedColumns.includes("PostName")} />
                     Post Name
                 </label>
                 <label>
-                    <input type="checkbox" name="columns" value="PostDate" />
+                    <input type="checkbox" name="columns" value="PostDate" onChange={handleCheckboxChange} checked={selectedColumns.includes("PostDate")} />
                     Post Date
                 </label>
                 <label>
-                    <input type="checkbox" name="columns" value="Location" />
+                    <input type="checkbox" name="columns" value="Location" onChange={handleCheckboxChange} checked={selectedColumns.includes("Location")} />
                     Location
                 </label>
                 <label>
-                    <input type="checkbox" name="columns" value="PostURL" />
+                    <input type="checkbox" name="columns" value="PostURL" onChange={handleCheckboxChange} checked={selectedColumns.includes("PostURL")} />
                     Post URL
                 </label>
             </div>
