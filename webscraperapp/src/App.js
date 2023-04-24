@@ -5,7 +5,7 @@ function App() {
   return (
       <div className="App">
         <header className="App-header" style={{ textAlign: 'center' }}>
-          <h1 style={{ marginLeft: '20px' }}>Web Scraper App</h1>
+          <h1 style={{ marginTop: '40px' }}>Web Scraper App</h1>
         </header>
         <WebScraperApp />
       </div>

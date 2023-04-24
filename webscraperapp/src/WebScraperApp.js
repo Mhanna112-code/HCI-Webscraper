@@ -7,6 +7,8 @@ const WebScraperApp = () => {
     const [selectedOption, setSelectedOption] = useState('');
     const [data, setData] = useState([]);
     const [selectedColumns, setSelectedColumns] = useState([]);
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [modalURL, setModalURL] = useState('');
 
     const handleSearchChange = (event) => {
         setSearchTerm(event.target.value);
@@ -25,9 +27,12 @@ const WebScraperApp = () => {
     };
 
     const exportToCSV = (data, filename) => {
+        const columnsToExport = selectedColumns.length ? selectedColumns : ['PostURL', 'Location'];
         const csvContent = [
-            selectedColumns.join(','),
-            ...data.map((item) => `${item.PostURL},${item.Location}`),
+            columnsToExport.join(','),
+            ...data.map((item) =>
+                columnsToExport.map((column) => item[column]).join(',')
+            ),
         ].join('\n');
         const blob = new Blob([csvContent], { type: 'text/csv' });
         const url = URL.createObjectURL(blob);
@@ -58,10 +63,69 @@ const WebScraperApp = () => {
         exportToCSV(dataToExport, filename);
     };
 
+    const renderTableHeader = () => {
+        return (
+            <tr>
+                {selectedColumns.length > 0
+                    ? selectedColumns.map((column, index) => <th key={index}>{column}</th>)
+                    : <>
+                        <th>PostURL</th>
+                        <th>Location</th>
+                    </>
+                }
+            </tr>
+        );
+    };
+
+    const truncateText = (text, maxLength) => {
+        return text.length > maxLength ? text.substring(0, maxLength) + "..." : text;
+    };
+
+    const openModal = (url) => {
+        setModalURL(url);
+        setIsModalVisible(true);
+    };
+
+    const closeModal = () => {
+        setIsModalVisible(false);
+    };
+
+    const renderTableRows = () => {
+        return data.map((item, index) => (
+            <tr key={index}>
+                {selectedColumns.length > 0
+                    ? selectedColumns.map((column, index) => (
+                        column === "PostURL" ? (
+                            <td key={index}>
+                                <div className="tooltip" onClick={() => openModal(item[column])}>
+                                    {truncateText(item[column], 45)}
+                                    <span className="tooltip-text">{item[column]}</span>
+                                </div>
+                            </td>
+                        ) : (
+                            <td key={index}>{item[column]}</td>
+                        )
+                    ))
+                    : <>
+                        <td>
+                            <div className="tooltip" onClick={() => openModal(item.PostURL)}>
+                                {truncateText(item.PostURL, 45)}
+                                <span className="tooltip-text">{item.PostURL}</span>
+                            </div>
+                        </td>
+                        <td>{item.Location}</td>
+                    </>
+                }
+            </tr>
+        ));
+    };
+
+
     const handleReset = () => {
         setSearchTerm('');
         setSelectedOption('');
         setSelectedColumns([]);
+        setData([]);
     };
 
     const handleCheckboxChange = (event) => {
@@ -81,6 +145,7 @@ const WebScraperApp = () => {
             <form onSubmit={handleSubmit}>
                 <input
                     className="common-input"
+                    id="keyword-search"
                     type="text"
                     placeholder="Enter a keyword..."
                     value={searchTerm}
@@ -94,9 +159,9 @@ const WebScraperApp = () => {
                 >
                     <option value="">Choose a category</option>
                     <option value="Cars">Cars</option>
-                    <option value="option2">Option 2</option>
-                    <option value="option3">Option 3</option>
-                    <option value="option4">Option 4</option>
+                    <option value="Art">Art</option>
+                    <option value="Cleaning">Cleaning</option>
+                    <option value="Daycare">Daycare</option>
                 </select>
                 <button type="submit" className="common-btn submit-btn">Submit</button>
             </form>
@@ -125,14 +190,25 @@ const WebScraperApp = () => {
                 <button onClick={handleExit} className="common-btn">Quit</button>
             </div>
             <div className="data-container">
-                <ul>
-                    {data.map((item, index) => (
-                        <li key={index}>
-                            Post URL: {item.PostURL}, Location: {item.Location}
-                        </li>
-                    ))}
-                </ul>
+                {data.length > 0 && (
+                    <table>
+                        <thead>
+                        {renderTableHeader()}
+                        </thead>
+                        <tbody>
+                        {renderTableRows()}
+                        </tbody>
+                    </table>
+                )}
             </div>
+            {isModalVisible && (
+                <div className="modal">
+                    <div className="modal-content">
+                        <span className="close" onClick={closeModal}>&times;</span>
+                        <p>{modalURL}</p>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
