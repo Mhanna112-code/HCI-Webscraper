@@ -17,7 +17,7 @@ const WebScraperApp = () => {
     };
 
     const fetchData = async () => {
-        const apiUrl = 'http://localhost:5000/api/get_data';
+        const apiUrl = 'http://localhost:5000/api/output_dummy_csv';
         const query = queryString.stringify({ category: selectedOption });
         const response = await fetch(`${apiUrl}?${query}`);
         const result = await response.json();
@@ -29,7 +29,6 @@ const WebScraperApp = () => {
             selectedColumns.join(','),
             ...data.map((item) => `${item.PostURL},${item.Location}`),
         ].join('\n');
-
         const blob = new Blob([csvContent], { type: 'text/csv' });
         const url = URL.createObjectURL(blob);
 
@@ -139,3 +138,4 @@ const WebScraperApp = () => {
 };
 
 export default WebScraperApp;
+
