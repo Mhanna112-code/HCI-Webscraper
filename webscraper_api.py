@@ -10,6 +10,7 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
+
 def get_data(category):
     try:
         # Local html file location
@@ -41,6 +42,8 @@ def get_data(category):
 
     except Exception as e:
         print(e)
+
+
 @app.route('/api/output_dummy_csv', methods=['GET'])
 def output_dummy_csv():
     try:
@@ -74,6 +77,7 @@ def output_dummy_csv():
                 location = city + ', ' + region
                 query_url = f"https://sfbay.craigslist.org/search/sfc/sss?query={category}#search=1~gallery~0~0"
                 search_results.append([query_url, location])
+
         columns = (['PostURL', 'Location'])
         # Store data in dataframe
         df = pd.DataFrame(search_results, columns=columns)
@@ -89,7 +93,6 @@ def output_dummy_csv():
         print(jsonify(df.to_dict(orient='records')))
         return jsonify(df.to_dict(orient='records'))
 
-
     except Exception as e:
         print(e)
         return Response("Error: Could not create file.", status=500)
@@ -97,4 +100,4 @@ def output_dummy_csv():
 
 if __name__ == "__main__":
     app.run(debug=True)
-    #get_data("photography")
+    # get_data("photography")
