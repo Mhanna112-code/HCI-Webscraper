@@ -19,7 +19,7 @@ const WebScraperApp = () => {
     };
 
     const fetchData = async () => {
-        const apiUrl = 'http://localhost:5000/api/output_dummy_csv';
+        const apiUrl = 'http://localhost:5000/api/get_data';
         const query = queryString.stringify({ category: selectedOption });
         const response = await fetch(`${apiUrl}?${query}`);
         const result = await response.json();

@@ -10,9 +10,15 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
+@app.route('/api/get_data', methods=['GET'])
 
 def get_data(category):
     try:
+        # Replace query with local html file location
+        #category = request.args.get('category')
+        #if not category:
+        #    return {"error": "Missing category parameter"}, 400
+
         # Local html file location
         file_path = f"{category}.html"
 
@@ -30,15 +36,29 @@ def get_data(category):
         # TODO-EMMANUEL: for loop through li tags to pull data we need
         for li in li_tags:
             # Get the Posting Name, Date, Price and Location of each posting
-            pass
-        # Columns for Excel Sheet
-        columns = (['PostID, PostTitle', 'PostDate', 'PostLocation'])
+            # Get the Posting Name, Date, Price and Location of each posting
+            post_id = li.attrs['data-pid']
+            post_title = li.attrs['title']
+            # post_date = li.find('time', {'class': 'result-date'}).get('datetime', '')
+            post_price = post_price = li.find('span', {'class': 'priceinfo'}).text
+            post_location = li.find('div', {'class': 'gallery-card'}).find('div', {'class': 'cl-gallery'}).find('div', {
+                'class': 'gallery-inner'}).find('div', {'class': 'meta'}).text.strip()
+
+            if post_location_tag is not None:
+                post_location = post_location_tag.text.strip()
+            else:
+                post_location = 'N/A'
+            search_results.append([post_id, post_title])
+            # Columns for Excel Sheet
+        columns = (['PostID, Post Name'])
         # Store data in dataframe
         df = pd.DataFrame(search_results, columns=columns)
         timestamp = datetime.datetime.now().strftime('%m_%d_%y %H%M%S')
         # Output Dataframe to CSV
         df.to_csv(f'Craigslist Results ({timestamp}).csv', index=False)
         print('File Successfully Created!')
+        #print(jsonify(df.to_dict(orient='records')))
+        #return jsonify(df.to_dict(orient='records'))
 
     except Exception as e:
         print(e)
@@ -99,5 +119,5 @@ def output_dummy_csv():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
-    # get_data("photography")
+    #app.run(debug=True)
+    get_data("photography")
