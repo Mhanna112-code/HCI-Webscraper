@@ -27,7 +27,7 @@ const WebScraperApp = () => {
     };
 
     const exportToCSV = (data, filename) => {
-        const columnsToExport = selectedColumns.length ? selectedColumns : ['PostURL', 'Location'];
+        const columnsToExport = selectedColumns.length ? selectedColumns : ['PostID', 'PostTitle', 'PostPrice', 'PostDate', 'PostLocation', 'PostURL'];
         const csvContent = [
             columnsToExport.join(','),
             ...data.map((item) =>
@@ -52,7 +52,7 @@ const WebScraperApp = () => {
 
     const handleExport = () => {
         const filename = `Craigslist_Results_${Date.now()}.csv`;
-        const columnsToExport = selectedColumns.length ? selectedColumns : ['PostURL', 'Location'];
+        const columnsToExport = selectedColumns.length ? selectedColumns : ['PostID', 'PostTitle', 'PostPrice', 'PostDate', 'PostLocation', 'PostURL'];
         const dataToExport = data.map(item => {
             const filteredItem = {};
             columnsToExport.forEach(column => {
@@ -70,7 +70,7 @@ const WebScraperApp = () => {
                     ? selectedColumns.map((column, index) => <th key={index}>{column}</th>)
                     : <>
                         <th>PostURL</th>
-                        <th>Location</th>
+                        <th>PostLocation</th>
                     </>
                 }
             </tr>
@@ -113,7 +113,7 @@ const WebScraperApp = () => {
                                 <span className="tooltip-text">{item.PostURL}</span>
                             </div>
                         </td>
-                        <td>{item.Location}</td>
+                        <td>{item.PostLocation}</td>
                     </>
                 }
             </tr>
@@ -168,16 +168,24 @@ const WebScraperApp = () => {
             <div className="csv-columns-container">
                 <h4>Select columns to include in the exported CSV:</h4>
                 <label>
-                    <input type="checkbox" name="columns" value="PostName" onChange={handleCheckboxChange} checked={selectedColumns.includes("PostName")} />
-                    Post Name
+                    <input type="checkbox" name="columns" value="PostID" onChange={handleCheckboxChange} checked={selectedColumns.includes("PostID")} />
+                    Post ID
+                </label>
+                <label>
+                    <input type="checkbox" name="columns" value="PostTitle" onChange={handleCheckboxChange} checked={selectedColumns.includes("PostTitle")} />
+                    Post Title
+                </label>
+                <label>
+                    <input type="checkbox" name="columns" value="PostPrice" onChange={handleCheckboxChange} checked={selectedColumns.includes("PostPrice")} />
+                    Post Price
                 </label>
                 <label>
                     <input type="checkbox" name="columns" value="PostDate" onChange={handleCheckboxChange} checked={selectedColumns.includes("PostDate")} />
                     Post Date
                 </label>
                 <label>
-                    <input type="checkbox" name="columns" value="Location" onChange={handleCheckboxChange} checked={selectedColumns.includes("Location")} />
-                    Location
+                    <input type="checkbox" name="columns" value="PostLocation" onChange={handleCheckboxChange} checked={selectedColumns.includes("PostLocation")} />
+                    Post Location
                 </label>
                 <label>
                     <input type="checkbox" name="columns" value="PostURL" onChange={handleCheckboxChange} checked={selectedColumns.includes("PostURL")} />
@@ -214,4 +222,5 @@ const WebScraperApp = () => {
 };
 
 export default WebScraperApp;
+
 

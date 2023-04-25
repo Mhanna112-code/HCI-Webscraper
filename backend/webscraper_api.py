@@ -57,12 +57,12 @@ def get_data():
         columns = (['PostID', 'PostTitle', 'PostPrice', 'PostDate', 'PostLocation', 'PostURL'])
         # Store data in dataframe
         df = pd.DataFrame(search_results, columns=columns)
-        if not os.path.exists('../Results'):
-            os.makedirs('../Results')
+        if not os.path.exists('Results'):
+            os.makedirs('Results')
 
         # Save the file to the Results directory
         timestamp = datetime.datetime.now().strftime('%m_%d_%y_%H%M%S')
-        output_path = os.path.join('../Results', f'Craigslist_Results_{category}_{timestamp}.csv')
+        output_path = os.path.join('Results', f'Craigslist_Results_{category}_{timestamp}.csv')
         df.to_csv(output_path, index=False)
         print('File Successfully Created!')
         print(jsonify(df.to_dict(orient='records')))
@@ -75,4 +75,3 @@ def get_data():
 if __name__ == "__main__":
     app.run(debug=True)
     # get_data("photography")
-
