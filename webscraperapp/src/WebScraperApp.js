@@ -9,6 +9,12 @@ const WebScraperApp = () => {
     const [selectedColumns, setSelectedColumns] = useState([]);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [modalURL, setModalURL] = useState('');
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 10;
+
+    const handlePageChange = (newPage) => {
+        setCurrentPage(newPage);
+    };
 
     const handleSearchChange = (event) => {
         setSearchTerm(event.target.value);
@@ -91,17 +97,25 @@ const WebScraperApp = () => {
     };
 
     const renderTableRows = () => {
-        return data.map((item, index) => (
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        const visibleData = data.slice(startIndex, endIndex);
+
+        return visibleData.map((item, index) => (
             <tr key={index}>
                 {selectedColumns.length > 0
                     ? selectedColumns.map((column, index) => (
                         column === "PostURL" ? (
-                            <td key={index}>
-                                <div className="tooltip" onClick={() => openModal(item[column])}>
-                                    {truncateText(item[column], 45)}
-                                    <span className="tooltip-text">{item[column]}</span>
-                                </div>
-                            </td>
+                            selectedColumns.length === 1 ? (
+                                <td key={index}>{item[column]}</td>
+                            ) : (
+                                <td key={index}>
+                                    <div className="tooltip" onClick={() => openModal(item[column])}>
+                                        {truncateText(item[column], 40)}
+                                        <span className="tooltip-text">{item[column]}</span>
+                                    </div>
+                                </td>
+                            )
                         ) : (
                             <td key={index}>{item[column]}</td>
                         )
@@ -109,7 +123,7 @@ const WebScraperApp = () => {
                     : <>
                         <td>
                             <div className="tooltip" onClick={() => openModal(item.PostURL)}>
-                                {truncateText(item.PostURL, 45)}
+                                {truncateText(item.PostURL, 40)}
                                 <span className="tooltip-text">{item.PostURL}</span>
                             </div>
                         </td>
@@ -120,6 +134,23 @@ const WebScraperApp = () => {
         ));
     };
 
+    const renderPagination = () => {
+        const totalPages = Math.ceil(data.length / itemsPerPage);
+
+        return (
+            <div className="pagination">
+                {Array.from({ length: totalPages }, (_, i) => (
+                    <button
+                        key={i}
+                        className={`page-btn ${currentPage === i + 1 ? "active" : ""}`}
+                        onClick={() => handlePageChange(i + 1)}
+                    >
+                        {i + 1}
+                    </button>
+                ))}
+            </div>
+        );
+    };
 
     const handleReset = () => {
         setSearchTerm('');
@@ -199,14 +230,17 @@ const WebScraperApp = () => {
             </div>
             <div className="data-container">
                 {data.length > 0 && (
-                    <table>
-                        <thead>
-                        {renderTableHeader()}
-                        </thead>
-                        <tbody>
-                        {renderTableRows()}
-                        </tbody>
-                    </table>
+                    <>
+                        <table>
+                            <thead>
+                            {renderTableHeader()}
+                            </thead>
+                            <tbody>
+                            {renderTableRows()}
+                            </tbody>
+                        </table>
+                        {renderPagination()}
+                    </>
                 )}
             </div>
             {isModalVisible && (

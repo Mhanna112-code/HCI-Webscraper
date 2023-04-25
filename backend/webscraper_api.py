@@ -1,10 +1,8 @@
 import os
-import re
-import time
 import datetime
 from bs4 import BeautifulSoup
 import pandas as pd
-from flask import Flask, Response, request, jsonify
+from flask import Flask, request, jsonify
 from flask_cors import CORS
 
 app = Flask(__name__)
@@ -20,7 +18,7 @@ def get_data():
             return {"error": "Missing category parameter"}, 400
 
         # Local html file location
-        file_path = f"backend/html/{category}.html"
+        file_path = f"html/{category}.html"
 
         # Read and parse the local html file
         with open(file_path, 'r', encoding='utf-8') as file:
@@ -33,6 +31,7 @@ def get_data():
 
         li_tags = soup.find_all('li', attrs={'class': 'cl-search-result cl-search-view-mode-gallery'})
         post_url = f"https://sfbay.craigslist.org/search/sfc/sss?query={category}#search=1~gallery~0~0"
+
         # TODO-EMMANUEL: for loop through li tags to pull data we need
         for li in li_tags:
             post_id = li.get('data-pid')
@@ -65,6 +64,7 @@ def get_data():
         output_path = os.path.join('Results', f'Craigslist_Results_{category}_{timestamp}.csv')
         df.to_csv(output_path, index=False)
         print('File Successfully Created!')
+
         print(jsonify(df.to_dict(orient='records')))
         return jsonify(df.to_dict(orient='records'))
 
