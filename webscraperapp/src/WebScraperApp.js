@@ -173,11 +173,11 @@ const WebScraperApp = () => {
                 </label>
                 <label>
                     <input type="checkbox" name="columns" value="PostTitle" onChange={handleCheckboxChange} checked={selectedColumns.includes("PostTitle")} />
-                    Post Name
+                    Post Title
                 </label>
                 <label>
                     <input type="checkbox" name="columns" value="PostPrice" onChange={handleCheckboxChange} checked={selectedColumns.includes("PostPrice")} />
-                    Post Date
+                    Post Price
                 </label>
                 <label>
                     <input type="checkbox" name="columns" value="PostDate" onChange={handleCheckboxChange} checked={selectedColumns.includes("PostDate")} />
@@ -185,7 +185,7 @@ const WebScraperApp = () => {
                 </label>
                 <label>
                     <input type="checkbox" name="columns" value="PostLocation" onChange={handleCheckboxChange} checked={selectedColumns.includes("PostLocation")} />
-                    PostLocation
+                    Post Location
                 </label>
                 <label>
                     <input type="checkbox" name="columns" value="PostURL" onChange={handleCheckboxChange} checked={selectedColumns.includes("PostURL")} />
