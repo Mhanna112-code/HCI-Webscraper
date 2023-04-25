@@ -20,7 +20,7 @@ def get_data():
             return {"error": "Missing category parameter"}, 400
 
         # Local html file location
-        file_path = f"{category}.html"
+        file_path = f"backend/html/{category}.html"
 
         # Read and parse the local html file
         with open(file_path, 'r', encoding='utf-8') as file:
@@ -57,12 +57,12 @@ def get_data():
         columns = (['PostID', 'PostTitle', 'PostPrice', 'PostDate', 'PostLocation', 'PostURL'])
         # Store data in dataframe
         df = pd.DataFrame(search_results, columns=columns)
-        if not os.path.exists('Results'):
-            os.makedirs('Results')
+        if not os.path.exists('../Results'):
+            os.makedirs('../Results')
 
         # Save the file to the Results directory
         timestamp = datetime.datetime.now().strftime('%m_%d_%y_%H%M%S')
-        output_path = os.path.join('Results', f'Craigslist_Results_{category}_{timestamp}.csv')
+        output_path = os.path.join('../Results', f'Craigslist_Results_{category}_{timestamp}.csv')
         df.to_csv(output_path, index=False)
         print('File Successfully Created!')
         print(jsonify(df.to_dict(orient='records')))
