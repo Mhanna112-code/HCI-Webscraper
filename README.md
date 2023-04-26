@@ -16,7 +16,7 @@ This is a React web app that allows users to fetch data from a backend API and e
 
 - Git
 - Python
-- Node.js and npm
+- Node.js v19.4.0 and npm v9.6.5
 
 ### Installation and Running
 
