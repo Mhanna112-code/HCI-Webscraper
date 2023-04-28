@@ -209,11 +209,12 @@ const WebScraperApp = () => {
     return (
         <div className="web-scraper-app">
             <form onSubmit={handleSubmit}>
+                <label htmlFor="keyword-search">Search:</label>
                 <input
                     className="common-input"
                     id="keyword-search"
                     type="text"
-                    placeholder="Please enter a list of keywords separated by commas"
+                    placeholder="Example: 'Subaru, Blue'"
                     value={searchTerm}
                     onChange={handleSearchChange}
                 />
