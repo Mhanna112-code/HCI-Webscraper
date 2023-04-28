@@ -6,7 +6,7 @@ const WebScraperApp = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedOption, setSelectedOption] = useState('');
     const [data, setData] = useState([]);
-    const [selectedColumns, setSelectedColumns] = useState([]);
+    const [selectedColumns, setSelectedColumns] = useState(['PostID', 'PostTitle', 'PostPrice', 'PostDate', 'PostLocation', 'PostURL']);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [modalURL, setModalURL] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
@@ -106,11 +106,7 @@ const WebScraperApp = () => {
             <tr>
                 {selectedColumns.length > 0
                     ? selectedColumns.map((column, index) => <th key={index}>{column}</th>)
-                    : <>
-                        <th>PostURL</th>
-                        <th>PostLocation</th>
-                        {searchTerm && <th>Search Term</th>} 
-                    </>
+                    : <></>
                 }
             </tr>
         );
@@ -154,15 +150,7 @@ const WebScraperApp = () => {
                             <td key={index}>{item[column]}</td>
                         )
                     ))
-                    : <>
-                        <td>
-                            <div className="tooltip" onClick={() => openModal(item.PostURL)}>
-                                {truncateText(item.PostURL, 40)}
-                                <span className="tooltip-text">{item.PostURL}</span>
-                            </div>
-                        </td>
-                        <td>{item.PostLocation}</td>
-                    </>
+                    : <></>
                 }
             </tr>
         ));
