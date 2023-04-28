@@ -24,13 +24,25 @@ const WebScraperApp = () => {
         setSelectedOption(event.target.value);
     };
 
+    // const fetchData = async () => {
+    //     const apiUrl = 'http://localhost:5000/api/get_data';
+    //     const query = queryString.stringify({ category: selectedOption });
+    //     const response = await fetch(`${apiUrl}?${query}`);
+    //     const result = await response.json();
+    //     setData(result);
+    // };
+
     const fetchData = async () => {
         const apiUrl = 'http://localhost:5000/api/get_data';
-        const query = queryString.stringify({ category: selectedOption });
+        const query = queryString.stringify({
+            category: selectedOption,
+            search: searchTerm, // add search term to the query object
+        });
         const response = await fetch(`${apiUrl}?${query}`);
         const result = await response.json();
         setData(result);
     };
+    
 
     const exportToCSV = (data, filename) => {
         const columnsToExport = selectedColumns.length ? selectedColumns : ['PostID', 'PostTitle', 'PostPrice', 'PostDate', 'PostLocation', 'PostURL'];
@@ -51,10 +63,17 @@ const WebScraperApp = () => {
         document.body.removeChild(link);
     };
 
+    // const handleSubmit = (event) => {
+    //     event.preventDefault();
+    //     fetchData();
+    // };
+
     const handleSubmit = (event) => {
         event.preventDefault();
-        fetchData();
-    };
+        if (searchTerm) { 
+            fetchData();
+        }
+    };    
 
     const handleExport = () => {
         const filename = `Craigslist_Results_${Date.now()}.csv`;
@@ -69,6 +88,20 @@ const WebScraperApp = () => {
         exportToCSV(dataToExport, filename);
     };
 
+    // const renderTableHeader = () => {
+    //     return (
+    //         <tr>
+    //             {selectedColumns.length > 0
+    //                 ? selectedColumns.map((column, index) => <th key={index}>{column}</th>)
+    //                 : <>
+    //                     <th>PostURL</th>
+    //                     <th>PostLocation</th>
+    //                 </>
+    //             }
+    //         </tr>
+    //     );
+    // };
+
     const renderTableHeader = () => {
         return (
             <tr>
@@ -77,11 +110,13 @@ const WebScraperApp = () => {
                     : <>
                         <th>PostURL</th>
                         <th>PostLocation</th>
+                        {searchTerm && <th>Search Term</th>} 
                     </>
                 }
             </tr>
         );
     };
+    
 
     const truncateText = (text, maxLength) => {
         return text.length > maxLength ? text.substring(0, maxLength) + "..." : text;
@@ -178,7 +213,7 @@ const WebScraperApp = () => {
                     className="common-input"
                     id="keyword-search"
                     type="text"
-                    placeholder="Enter a keyword..."
+                    placeholder="Please enter a list of keywords separated by commas"
                     value={searchTerm}
                     onChange={handleSearchChange}
                 />
