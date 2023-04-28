@@ -1,10 +1,8 @@
 import os
-import re
-import time
 import datetime
 from bs4 import BeautifulSoup
 import pandas as pd
-from flask import Flask, Response, request, jsonify
+from flask import Flask, request, jsonify
 from flask_cors import CORS
 
 app = Flask(__name__)
@@ -16,9 +14,13 @@ def get_data():
     try:
         # Replace query with local html file location
         category = request.args.get('category')
+        search = request.args.get('search')
         if not category:
             return {"error": "Missing category parameter"}, 400
-
+        if search:
+            search_words = [word.strip() for word in search.split(',')]
+        else:
+            search_words = []
         # Local html file location
         file_path = f"backend/html/{category}.html"
 
@@ -33,10 +35,16 @@ def get_data():
 
         li_tags = soup.find_all('li', attrs={'class': 'cl-search-result cl-search-view-mode-gallery'})
         post_url = f"https://sfbay.craigslist.org/search/sfc/sss?query={category}#search=1~gallery~0~0"
+
         # TODO-EMMANUEL: for loop through li tags to pull data we need
         for li in li_tags:
             post_id = li.get('data-pid')
             post_title = li.get('title')
+
+            # Check if post_title contains any of the search_words
+            if search_words:
+                if not any(word.lower() in post_title.lower() for word in search_words):
+                    continue
 
             # Get the Posting Name, Date, Price and Location of each posting
             try:
@@ -57,14 +65,15 @@ def get_data():
         columns = (['PostID', 'PostTitle', 'PostPrice', 'PostDate', 'PostLocation', 'PostURL'])
         # Store data in dataframe
         df = pd.DataFrame(search_results, columns=columns)
-        if not os.path.exists('../Results'):
-            os.makedirs('../Results')
+        if not os.path.exists('Results'):
+            os.makedirs('Results')
 
         # Save the file to the Results directory
         timestamp = datetime.datetime.now().strftime('%m_%d_%y_%H%M%S')
-        output_path = os.path.join('../Results', f'Craigslist_Results_{category}_{timestamp}.csv')
+        output_path = os.path.join('Results', f'Craigslist_Results_{category}_{timestamp}.csv')
         df.to_csv(output_path, index=False)
         print('File Successfully Created!')
+
         print(jsonify(df.to_dict(orient='records')))
         return jsonify(df.to_dict(orient='records'))
 
@@ -75,4 +84,3 @@ def get_data():
 if __name__ == "__main__":
     app.run(debug=True)
     # get_data("photography")
-

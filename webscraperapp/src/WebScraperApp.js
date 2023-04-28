@@ -6,9 +6,15 @@ const WebScraperApp = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedOption, setSelectedOption] = useState('');
     const [data, setData] = useState([]);
-    const [selectedColumns, setSelectedColumns] = useState([]);
+    const [selectedColumns, setSelectedColumns] = useState(['PostID', 'PostTitle', 'PostPrice', 'PostDate', 'PostLocation', 'PostURL']);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [modalURL, setModalURL] = useState('');
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 10;
+
+    const handlePageChange = (newPage) => {
+        setCurrentPage(newPage);
+    };
 
     const handleSearchChange = (event) => {
         setSearchTerm(event.target.value);
@@ -20,14 +26,19 @@ const WebScraperApp = () => {
 
     const fetchData = async () => {
         const apiUrl = 'http://localhost:5000/api/get_data';
-        const query = queryString.stringify({ category: selectedOption });
+        console.log("searchTerm: ", searchTerm)
+        const query = queryString.stringify({
+            category: selectedOption,
+            search: searchTerm, // add search term to the query object
+        });
         const response = await fetch(`${apiUrl}?${query}`);
         const result = await response.json();
         setData(result);
     };
+    
 
     const exportToCSV = (data, filename) => {
-        const columnsToExport = selectedColumns.length ? selectedColumns : ['PostURL', 'Location'];
+        const columnsToExport = selectedColumns.length ? selectedColumns : ['PostID', 'PostTitle', 'PostPrice', 'PostDate', 'PostLocation', 'PostURL'];
         const csvContent = [
             columnsToExport.join(','),
             ...data.map((item) =>
@@ -45,6 +56,7 @@ const WebScraperApp = () => {
         document.body.removeChild(link);
     };
 
+
     const handleSubmit = (event) => {
         event.preventDefault();
         fetchData();
@@ -52,7 +64,7 @@ const WebScraperApp = () => {
 
     const handleExport = () => {
         const filename = `Craigslist_Results_${Date.now()}.csv`;
-        const columnsToExport = selectedColumns.length ? selectedColumns : ['PostURL', 'Location'];
+        const columnsToExport = selectedColumns.length ? selectedColumns : ['PostID', 'PostTitle', 'PostPrice', 'PostDate', 'PostLocation', 'PostURL'];
         const dataToExport = data.map(item => {
             const filteredItem = {};
             columnsToExport.forEach(column => {
@@ -68,14 +80,12 @@ const WebScraperApp = () => {
             <tr>
                 {selectedColumns.length > 0
                     ? selectedColumns.map((column, index) => <th key={index}>{column}</th>)
-                    : <>
-                        <th>PostURL</th>
-                        <th>Location</th>
-                    </>
+                    : <></>
                 }
             </tr>
         );
     };
+    
 
     const truncateText = (text, maxLength) => {
         return text.length > maxLength ? text.substring(0, maxLength) + "..." : text;
@@ -91,35 +101,52 @@ const WebScraperApp = () => {
     };
 
     const renderTableRows = () => {
-        return data.map((item, index) => (
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        const visibleData = data.slice(startIndex, endIndex);
+
+        return visibleData.map((item, index) => (
             <tr key={index}>
                 {selectedColumns.length > 0
                     ? selectedColumns.map((column, index) => (
                         column === "PostURL" ? (
-                            <td key={index}>
-                                <div className="tooltip" onClick={() => openModal(item[column])}>
-                                    {truncateText(item[column], 45)}
-                                    <span className="tooltip-text">{item[column]}</span>
-                                </div>
-                            </td>
+                            selectedColumns.length === 1 ? (
+                                <td key={index}>{item[column]}</td>
+                            ) : (
+                                <td key={index}>
+                                    <div className="tooltip" onClick={() => openModal(item[column])}>
+                                        {truncateText(item[column], 40)}
+                                        <span className="tooltip-text">{item[column]}</span>
+                                    </div>
+                                </td>
+                            )
                         ) : (
                             <td key={index}>{item[column]}</td>
                         )
                     ))
-                    : <>
-                        <td>
-                            <div className="tooltip" onClick={() => openModal(item.PostURL)}>
-                                {truncateText(item.PostURL, 45)}
-                                <span className="tooltip-text">{item.PostURL}</span>
-                            </div>
-                        </td>
-                        <td>{item.Location}</td>
-                    </>
+                    : <></>
                 }
             </tr>
         ));
     };
 
+    const renderPagination = () => {
+        const totalPages = Math.ceil(data.length / itemsPerPage);
+
+        return (
+            <div className="pagination">
+                {Array.from({ length: totalPages }, (_, i) => (
+                    <button
+                        key={i}
+                        className={`page-btn ${currentPage === i + 1 ? "active" : ""}`}
+                        onClick={() => handlePageChange(i + 1)}
+                    >
+                        {i + 1}
+                    </button>
+                ))}
+            </div>
+        );
+    };
 
     const handleReset = () => {
         setSearchTerm('');
@@ -143,11 +170,12 @@ const WebScraperApp = () => {
     return (
         <div className="web-scraper-app">
             <form onSubmit={handleSubmit}>
+                <label htmlFor="keyword-search">Search:</label>
                 <input
                     className="common-input"
                     id="keyword-search"
                     type="text"
-                    placeholder="Enter a keyword..."
+                    placeholder="Example: 'Subaru, Blue'"
                     value={searchTerm}
                     onChange={handleSearchChange}
                 />
@@ -168,16 +196,24 @@ const WebScraperApp = () => {
             <div className="csv-columns-container">
                 <h4>Select columns to include in the exported CSV:</h4>
                 <label>
-                    <input type="checkbox" name="columns" value="PostName" onChange={handleCheckboxChange} checked={selectedColumns.includes("PostName")} />
-                    Post Name
+                    <input type="checkbox" name="columns" value="PostID" onChange={handleCheckboxChange} checked={selectedColumns.includes("PostID")} />
+                    Post ID
+                </label>
+                <label>
+                    <input type="checkbox" name="columns" value="PostTitle" onChange={handleCheckboxChange} checked={selectedColumns.includes("PostTitle")} />
+                    Post Title
+                </label>
+                <label>
+                    <input type="checkbox" name="columns" value="PostPrice" onChange={handleCheckboxChange} checked={selectedColumns.includes("PostPrice")} />
+                    Post Price
                 </label>
                 <label>
                     <input type="checkbox" name="columns" value="PostDate" onChange={handleCheckboxChange} checked={selectedColumns.includes("PostDate")} />
                     Post Date
                 </label>
                 <label>
-                    <input type="checkbox" name="columns" value="Location" onChange={handleCheckboxChange} checked={selectedColumns.includes("Location")} />
-                    Location
+                    <input type="checkbox" name="columns" value="PostLocation" onChange={handleCheckboxChange} checked={selectedColumns.includes("PostLocation")} />
+                    Post Location
                 </label>
                 <label>
                     <input type="checkbox" name="columns" value="PostURL" onChange={handleCheckboxChange} checked={selectedColumns.includes("PostURL")} />
@@ -191,14 +227,17 @@ const WebScraperApp = () => {
             </div>
             <div className="data-container">
                 {data.length > 0 && (
-                    <table>
-                        <thead>
-                        {renderTableHeader()}
-                        </thead>
-                        <tbody>
-                        {renderTableRows()}
-                        </tbody>
-                    </table>
+                    <>
+                        <table>
+                            <thead>
+                            {renderTableHeader()}
+                            </thead>
+                            <tbody>
+                            {renderTableRows()}
+                            </tbody>
+                        </table>
+                        {renderPagination()}
+                    </>
                 )}
             </div>
             {isModalVisible && (
@@ -214,4 +253,5 @@ const WebScraperApp = () => {
 };
 
 export default WebScraperApp;
+
 
