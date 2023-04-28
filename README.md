@@ -15,9 +15,9 @@ This is a React web app that allows users to fetch data from a backend API and e
 ### Prerequisites
 
 - Git
-- Python
-- Node.js v19.4.0 and npm v9.6.5
-
+- Python v3.6 and later
+- NPM v8.19.2
+- React v18.2.0
 ### Installation and Running
 
 1. Clone the repository:
