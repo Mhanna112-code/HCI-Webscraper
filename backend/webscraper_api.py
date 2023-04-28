@@ -14,11 +14,15 @@ def get_data():
     try:
         # Replace query with local html file location
         category = request.args.get('category')
+        search = request.args.get('search')
         if not category:
             return {"error": "Missing category parameter"}, 400
-
+        if search:
+            search_words = [word.strip() for word in search.split(',')]
+        else:
+            search_words = []
         # Local html file location
-        file_path = f"html/{category}.html"
+        file_path = f"backend/html/{category}.html"
 
         # Read and parse the local html file
         with open(file_path, 'r', encoding='utf-8') as file:
@@ -36,6 +40,11 @@ def get_data():
         for li in li_tags:
             post_id = li.get('data-pid')
             post_title = li.get('title')
+
+            # Check if post_title contains any of the search_words
+            if search_words:
+                if not any(word.lower() in post_title.lower() for word in search_words):
+                    continue
 
             # Get the Posting Name, Date, Price and Location of each posting
             try:

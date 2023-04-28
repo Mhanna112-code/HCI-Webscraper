@@ -34,6 +34,7 @@ const WebScraperApp = () => {
 
     const fetchData = async () => {
         const apiUrl = 'http://localhost:5000/api/get_data';
+        console.log("searchTerm: ", searchTerm)
         const query = queryString.stringify({
             category: selectedOption,
             search: searchTerm, // add search term to the query object
@@ -70,10 +71,8 @@ const WebScraperApp = () => {
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        if (searchTerm) { 
-            fetchData();
-        }
-    };    
+        fetchData();
+    };
 
     const handleExport = () => {
         const filename = `Craigslist_Results_${Date.now()}.csv`;
