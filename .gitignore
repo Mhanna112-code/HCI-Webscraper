@@ -1,1 +1,5 @@
-/backend/Results/
+/Results/
+webscraperapp/node_modules/
+webscraperapp/package-lock.json
+package-lock.json
+venv/
