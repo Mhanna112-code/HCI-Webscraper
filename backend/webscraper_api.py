@@ -71,7 +71,7 @@ def get_data():
 
         # Save the file to the Results directory
         timestamp = datetime.datetime.now().strftime('%m_%d_%y_%H%M%S')
-        output_path = os.path.join('Results', f'Craigslist_Results_{category}_{timestamp}.csv')
+        output_path = os.path.join('../Results', f'Craigslist_Results_{category}_{timestamp}.csv')
         df.to_csv(output_path, index=False)
         print('File Successfully Created!')
 
