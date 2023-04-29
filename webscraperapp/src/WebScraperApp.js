@@ -26,7 +26,6 @@ const WebScraperApp = () => {
 
     const fetchData = async () => {
         const apiUrl = 'http://localhost:5000/api/get_data';
-        console.log("searchTerm: ", searchTerm)
         const query = queryString.stringify({
             category: selectedOption,
             search: searchTerm, // add search term to the query object
@@ -170,7 +169,7 @@ const WebScraperApp = () => {
     return (
         <div className="web-scraper-app">
             <form onSubmit={handleSubmit}>
-                <label htmlFor="keyword-search">Search:</label>
+                <label htmlFor="keyword-search" style={{ display: "block"}}>Please enter a comma-separated list of keywords:</label>
                 <input
                     className="common-input"
                     id="keyword-search"
