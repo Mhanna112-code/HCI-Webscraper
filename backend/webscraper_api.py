@@ -14,6 +14,7 @@ def get_data():
     try:
         # Replace query with local html file location
         category = request.args.get('category')
+        category = category.lower()
         search = request.args.get('search')
         if not category:
             return {"error": "Missing category parameter"}, 400
@@ -22,7 +23,7 @@ def get_data():
         else:
             search_words = []
         # Local html file location
-        file_path = f"backend/html/{category}.html"
+        file_path = f"html/{category}.html"
 
         # Read and parse the local html file
         with open(file_path, 'r', encoding='utf-8') as file:
@@ -65,8 +66,8 @@ def get_data():
         columns = (['PostID', 'PostTitle', 'PostPrice', 'PostDate', 'PostLocation', 'PostURL'])
         # Store data in dataframe
         df = pd.DataFrame(search_results, columns=columns)
-        if not os.path.exists('Results'):
-            os.makedirs('Results')
+        if not os.path.exists('../Results'):
+            os.makedirs('../Results')
 
         # Save the file to the Results directory
         timestamp = datetime.datetime.now().strftime('%m_%d_%y_%H%M%S')
