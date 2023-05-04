@@ -34,14 +34,19 @@ const WebScraperApp = () => {
         const result = await response.json();
         setData(result);
     };
-    
+
 
     const exportToCSV = (data, filename) => {
         const columnsToExport = selectedColumns.length ? selectedColumns : ['PostID', 'PostTitle', 'PostPrice', 'PostDate', 'PostLocation', 'PostURL'];
         const csvContent = [
-            columnsToExport.join(','),
+            columnsToExport.map(column => `"${column}"`).join(','),
             ...data.map((item) =>
-                columnsToExport.map((column) => item[column]).join(',')
+                columnsToExport.map((column) => {
+                    const value = item[column];
+                    const cleanedValue = value ? value.toString().replace(/[\r\n]+/g, ' ').trim() : '';
+                    const escapedValue = cleanedValue.replace(/"/g, '""');
+                    return `"${escapedValue}"`;
+                }).join(',')
             ),
         ].join('\n');
         const blob = new Blob([csvContent], { type: 'text/csv' });
